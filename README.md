@@ -132,20 +132,19 @@ OPENAI_API_KEY=your_openai_api_key
 ```
 
 ## Usage :star:
-
-1. Start the Flask server:
-```bash
-python app.py
-```
-
-2. Access the application at `http://localhost:5000`
-
-3. Add these codes into main.py
+1. Add these codes into main.py
    ```
     GITHUB_TOKEN = os.getenv('GITHUB_TOKEN', 'your_github_token') #please replace 'your_github_token' with your GitHub token
     chatbot_bp = Blueprint('chatbot', __name__, template_folder='templates')
     client = OpenAI(api_key='your_api_key')  # please replace 'your_api_key' with your OpenAI API key
    ```
+2. Start the Flask server:
+```bash
+python app.py
+```
+
+3. Access the application at `http://localhost:5000`
+
 4. Use different tools:
    - Upload PDFs for text extraction
    - Record or upload audio for transcription
