@@ -140,7 +140,13 @@ python app.py
 
 2. Access the application at `http://localhost:5000`
 
-3. Use different tools:
+3. Add these codes into main.py
+   ```
+    GITHUB_TOKEN = os.getenv('GITHUB_TOKEN', 'your_github_token') #please replace 'your_github_token' with your GitHub token
+    chatbot_bp = Blueprint('chatbot', __name__, template_folder='templates')
+    client = OpenAI(api_key='your_api_key')  # please replace 'your_api_key' with your OpenAI API key
+   ```
+4. Use different tools:
    - Upload PDFs for text extraction
    - Record or upload audio for transcription
    - Submit text for keyword extraction and GitHub repository search
