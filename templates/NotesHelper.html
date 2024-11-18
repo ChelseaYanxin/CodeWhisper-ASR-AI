@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>noteshelper</title>
+    <style>
+        /* 设置标题居中和字体样式 */
+        h1 {
+            text-align: center; /* 标题居中 */
+            font-size: 64px;    /* 字体大小 */
+            font-family: Arial, sans-serif; /* 字体样式 */
+            color: purple;        /* 字体颜色 */
+            margin-top: 30px;   /* 距离页面顶部的间距 */
+        }
+        h2 {
+            text-align: center; /* 标题居中 */
+            font-size: 24px;    /* 字体大小 */
+            font-family: Arial, sans-serif; /* 字体样式 */
+            color: rgb(125, 31, 125);        /* 字体颜色 */
+            /* margin-top: 50px;   距离页面顶部的间距 */
+        }
+        h3 {
+            text-align: center; /* 标题居中 */
+            font-size: 36px;    /* 字体大小 */
+            font-family: Arial, sans-serif; /* 字体样式 */
+            color: purple;        /* 字体颜色 */
+            margin-top: 30px;   /* 距离页面顶部的间距 */
+        }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+            margin: 0;
+            padding: 0;
+            font-size: 24px;
+            height: 100vh; /* Set height to fill the viewport */
+            background-image: url({{ url_for('static', filename='/images/background.jpg') }}); /* Change the path to your image */
+            background-size: cover; /* Cover the entire background */
+            background-position: center; /* Center the image */
+            color: rgb(235, 142, 201); /*Change text color for better visibility*/
+            }
+            .content {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 20px;
+                border: 1px solid #f8a8f5;
+                border-radius: 5px;
+            }
+    </style>
+    <!-- <link rel="stylesheet" href="style.css"> -->
+</head>
+<body>
+    <header>
+    <!-- <button class="menu">&#9776;</button> -->
+    <h1>CODEWHISPER</h1>
+    <h2>Authors: Zhang Yanxin, Zhang Zhihui, Hao Bohan, Li Lingyu</h2>
+    <h3>Noteshelper</h3>
+    
+    <body>
+    
+    
+    <!-- <div class="row">
+        <h1 class='col-lg-8'>Demo</h1>
+        <div class='col-lg-4 text-right'>
+          <iframe  src="https://ghbtns.com/github-btn.html?user=JaidedAI&repo=EasyOCR&type=star&count=true&size=large"
+          frameborder="0" scrolling="0" width="170" height="30" title="GitHub"></iframe>
+        </div>
+      </div> -->
+       <!--
+            <div class="form-group">
+              <p><b>Step 2: </b>Select Recognition Model</p>
+              
+            </div>
+            -->
+      <!-- <div class="row align-items-stretch mb-5"> 
+        <div class="col-md-4">
+          <form enctype="multipart/form-data" method="post" action="">
+            <input type="hidden" name="csrfmiddlewaretoken" value="B0VfaSGjZyizKulJOhBDfjQgaYv3QYstCmeKt9HkJ21VCIQMXdXKNUyPuuyvGnSw">
+            
+      
+            <div class="form-group">
+              <p><b>Step 1: </b>Choose OCR file</p>
+              <input type="file" name="file" placeholder="image file: pdf only" class="form-control form-jaided" required id="id_file">
+            </div>
+           
+            <div class="form-group">
+                <p><b>Step 2: </b>Choose ASR file</p>
+                <input type="file" name="file" placeholder="image file: mp3, mp4 only" class="form-control form-jaided" required id="id_file">
+              </div>
+            <div class="row">
+                <div class="col-md-4">
+        
+                  <button class="btn btn-primary btn-jaided btn-xl" onclick="loading();" name="demoForm" type="submit">Process</button>
+                </div>
+                <div class="col-md-4 LoadingImage" style="display: none">
+                    <img style="height: 40px;" src="/static/img/loading.gif" alt="loading">
+                </div>
+                <div class="col-md-4 LoadingImage" style="display: none">
+                    Processing, please wait
+                </div>
+              </div>
+            </form> -->
+
+
+
+            <div class="container mt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body">
+                                <h2 class="text-center mb-4">Upload Files for Processing</h2>
+                                <br>
+                                <br>
+                                <form enctype="multipart/form-data" method="post" action="">
+                                    <input type="hidden" name="csrfmiddlewaretoken" value="B0VfaSGjZyizKulJOhBDfjQgaYv3QYstCmeKt9HkJ21VCIQMXdXKNUyPuuyvGnSw">
+                                    
+                                    <div class="form-group">
+                                        <label><b>Step 1:</b> Choose ASR file </label><br>
+                                        <label>    (WAV, FLAC, MP3, MP4 only)</label>
+                                        <br>
+                                        <a href="{{ url_for('SpeechToNote') }}" target="_blank" style="color: #f7b9e0">Speech To Note</a>
+{#                                        <input type="file" name="file" <c></c>lass="form-control" required id="id_file">#}
+
+                                    </div>
+                                <br>
+                                <br>
+                                <br>
+                                <br>
+                                    <div class="form-group">
+                                        <label><b>Step 2:</b> Choose OCR file (PDF only)</label>
+                                        <!-- <input type="file" name="asr_file" class="form-control" required id="id_asr_file"> -->
+                                        <!-- <a href="project/templates/index.html" target="_blank">   Slide To Note</a>  -->
+                                        <br>
+                                        <a href="{{ url_for('SlideToNote') }}" target="_blank" style="color: #f7b9e0">   Slide To Note</a>
+                                    </div>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br> 
+                                    <!-- <div class="row align-items-center mt-4">
+                                        <div class="col-md-4">
+                                            <button class="btn btn-primary btn-lg btn-block" onclick="loading();" name="demoForm" type="submit">Process</button>
+                                        </div>
+                                        <div class="col-md-4 LoadingImage text-center" style="display: none;">
+                                            <img style="height: 40px;" src="/static/img/loading.gif" alt="loading">
+                                            <p>Processing, please wait...</p>
+                                        </div>
+                                    </div> -->
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
+            
+            <!-- <div class="form-group">
+              <p><b>Step 2: </b>Enter Language Codes (use comma-separated for multiple languages e.g. <i>en,th</i> for English and Thai,  please see language codes below)</p>
+              <input type="text" name="language_list" value="en" maxlength="80" class="form-control form-jaided" required id="id_language_list">
+            </div> -->
+          <!-- <div class='mt-5'>
+          <p><b>Note: </b><p>
+            <ul>
+            <li>File extension support: png, jpg, tiff.</li>
+            <li>File size limit: 2 Mb</li>
+            <li>Image dimension limit: 1500 pixel</li>
+            <li>Possible Language Code Combination: Languages sharing the same written script (e.g. latin) can be used together. English can be used with any language.</li>
+            </ul>
+          </div>
+      
+          <div class='mt-3'>
+          
+            <a class="btn btn-primary btn-jaided btn-xl js-signin-modal-trigger cd-main-nav__item--signup font-weight-bold" href="#0" data-signin="signup">Sign up for more features in beta version</a>
+          
+          </div> -->
+        </div>
+    </body>
+    
+</body>
+</html>
+​

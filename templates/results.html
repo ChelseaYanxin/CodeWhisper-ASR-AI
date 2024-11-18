@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Results</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        header {
+            height: 100px;
+            width: 100vw;
+            background: #6A5ACD; /* 蓝紫色 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        header p {
+            text-align: center;
+            font-size: 24px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .core {
+            width: 80%;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .core input[type="file"] {
+            display: block;
+            margin: 20px auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .core button {
+            padding: 10px 20px;
+            background: #6A5ACD; /* 蓝紫色 */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .core button:hover {
+            background: #836FFF; /* 浅蓝紫色 */
+        }
+
+        .core .result {
+            margin-top: 20px;
+        }
+
+        .core .result textarea {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            resize: none;
+            font-family: 'Times New Roman', Times, serif;
+            background: #f9f9f9;
+            line-height: 1.6;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .core .result textarea::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Search Results</h1>
+        <div class="original-text">
+            <h3>Original Text:</h3>
+            <p>{{ text }}</p>
+        </div>
+        <div class="keywords">
+            <h3>Extracted Keywords:</h3>
+            <ul>
+            {% for keyword in keywords %}
+                <li>{{ keyword }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+        <div class="repositories">
+            <h3>Related GitHub Projects:</h3>
+            {% if repositories %}
+                <ul>
+                {% for repo in repositories %}
+                    <li>
+                        <a href="{{ repo.url }}" target="_blank">{{ repo.name }}</a>
+                        <p>{{ repo.description or 'No description available' }}</p>
+                        <span class="stars">⭐ {{ repo.stars }}</span>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No related projects found</p>
+            {% endif %}
+        </div>
+        <a href="/keyword_search" class="back-button">Back to Home</a>
+    </div>
+</body>
+</html>

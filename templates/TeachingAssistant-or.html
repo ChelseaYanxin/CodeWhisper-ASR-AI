@@ -1,0 +1,94 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS Teaching Assistant Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto max-w-4xl p-4">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h1 class="text-2xl font-bold mb-4 text-gray-800">CS Teaching Assistant Chat</h1>
+            
+            <!-- Chat Messages Container -->
+            <div id="chat-messages" class="h-96 overflow-y-auto mb-4 p-4 border rounded-lg">
+                <div class="message assistant">
+                    <div class="bg-blue-100 p-3 rounded-lg inline-block mb-2">
+                        Hello! I'm your CS Teaching Assistant. How can I help you today?
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Input Form -->
+            <form id="chat-form" class="flex gap-2">
+                <input type="text" 
+                       id="user-input" 
+                       class="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                       placeholder="Type your question here..."
+                       required>
+                <button type="submit" 
+                        class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+                    Send
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+
+        function addMessage(content, isUser = false, timestamp = '') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user text-right' : 'assistant'} mb-4`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = `${isUser ? 'bg-blue-500 text-white' : 'bg-blue-100 text-gray-800'} p-3 rounded-lg inline-block`;
+            bubble.textContent = content;
+            
+            const time = document.createElement('div');
+            time.className = 'text-xs text-gray-500 mt-1';
+            time.textContent = timestamp;
+            
+            messageDiv.appendChild(bubble);
+            messageDiv.appendChild(time);
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            addMessage(message, true, new Date().toLocaleTimeString());
+            userInput.value = '';
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message }),
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addMessage(data.response, false, data.timestamp);
+                } else {
+                    const errorMessage = data.error || 'Unknown error occurred';
+                    addMessage(`Error: ${errorMessage}`, false);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('Sorry, something went wrong. Please try again.', false);
+            }
+        });
+    </script>
+</body>
+</html>

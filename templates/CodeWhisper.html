@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CODEWHISPER</title>
+    <style>
+        /* 设置标题居中和字体样式 */
+        h1 {
+            text-align: center; /* 标题居中 */
+            font-size: 64px;    /* 字体大小 */
+            font-family: Arial, sans-serif; /* 字体样式 */
+            color: purple;        /* 字体颜色 */
+            margin-top: 30px;   /* 距离页面顶部的间距 */
+        }
+        h2 {
+            text-align: center; /* 标题居中 */
+            font-size: 24px;    /* 字体大小 */
+            font-family: Arial, sans-serif; /* 字体样式 */
+            color: rgb(125, 31, 125);        /* 字体颜色 */
+            /* margin-top: 50px;   距离页面顶部的间距 */
+        }
+    </style>
+    <!-- <link rel="stylesheet" href="style.css"> -->
+</head>
+<body>
+    <header>
+    <!-- <button class="menu">&#9776;</button> -->
+    <h1>CODEWHISPER</h1>
+    <h2>Authors: Zhang Yanxin, Zhang Zhihui, Hao Bohan, Li Lingyu</h2>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>三张图片和超链接</title>
+        <style>
+            /* Flexbox 布局设置，使图片和文字居中 */
+            .image-container {
+                display: flex;
+                justify-content: space-around; /* 使三个图片在一行均匀分布 */
+                align-items: center;
+                margin: 20px 0;
+            }
+            .image-item {
+                text-align: center; /* 图片和超链接居中显示 */
+            }
+            .image-item img {
+                width: 150px; /* 设置图片宽度 */
+                height: auto; /* 保持图片纵横比 */
+            }
+            .image-item a {
+                display: block; /* 使链接占满整行 */
+                margin-top: 10px; /* 图片和链接之间的间距 */
+                font-size: 18px; /* 设置字体大小 */
+                color: rgb(247, 185, 224); /* 链接颜色 */
+                text-decoration: none; /* 去掉下划线 */
+            }
+            .image-item a:hover {
+                text-decoration: underline; /* 鼠标悬停时加下划线 */
+            }
+            body {
+            font-family: Arial, sans-serif;
+            text-align: left;
+            margin: 50px;
+            margin: 0;
+            padding: 0;
+            height: 100vh; /* Set height to fill the viewport */
+            {#background-image: url('/images/background.jpg'); /* Change the path to your image */#}
+            background-size: cover; /* Cover the entire background */
+            background-image:url({{ url_for('static', filename='/images/background.jpg') }});
+            background-position: center; /* Center the image */
+            color: rgb(247, 185, 224); /*Change text color for better visibility*/
+            }
+            .content {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 20px;
+                border: 1px solid #f8a8f5;
+                border-radius: 5px;
+            }
+        </style>
+    </head>
+    <body>
+    
+    <div class="image-container">
+        <!-- 第一张图片及对应的超链接 -->
+        <div class="image-item">
+{#            <img src="images/noteshelper3(1).png" alt="图片1">#}
+            <img src="{{ url_for('static', filename='/images/noteshelper3(1).png') }}" alt="Picture 1">
+{#            <a href="noteshelper.html" target="_blank">Noteshelper</a> <!-- 超链接点击后在新窗口打开 -->#}
+            <a href="{{ url_for('NotesHelper') }}" target="_blank">Noteshelper</a>
+        </div>
+        
+        <!-- 第二张图片及对应的超链接 -->
+        <div class="image-item">
+{#            <img src="images/additional resources(1).png" alt="图片2">#}
+            <img src="{{ url_for('static', filename='/images/additional resources(1).png') }}" alt="Picture 2">
+            <a href="{{ url_for('AdditionalResources') }}" target="_blank">Additioanl Sources</a> <!-- 超链接点击后在新窗口打开 -->
+        </div>
+    
+        <!-- 第三张图片及对应的超链接 -->
+        <div class="image-item">
+{#            <img src="images/Voice teaching assistant(1).png" alt="图片3">#}
+            <img src="{{ url_for('static', filename='/images/Voice teaching assistant(1).png') }}" alt="Picture 3">
+            <a href="{{ url_for('TeachingAssistant') }}" target="_blank">Teaching Assistant</a> <!-- 超链接点击后在新窗口打开 -->
+        </div>
+    </div>
+    <div class="content">
+        <!-- <h2>Objective of the Website</h2> -->
+        <p>The objective of the website is to help students in Computer Science better understand the lectures and get better learning outcomes.</p>
+        
+        <!-- <h3>Illustrations of the Three Functions:</h3> -->
+        
+        <h4>NotesHelper</h4>
+        <p>The system generates concise notes for computer courses through ASR—speech recognition, OCR—image recognition, and text extraction processing.</p>
+        
+        <h4>Additional Sources</h4>
+        <p>Based on the recognized CS terms and the student's learning content, the system can recommend subsequent learning paths, such as GitHub links or research papers.</p>
+        
+        <h4>Voice Teaching Assistant</h4>
+        <p>When students encounter complex terms or concepts during learning, the system can automatically provide additional explanations or examples based on ASR.</p>
+    </div>
+    </body>
+    
+</body>
+</html>
+​

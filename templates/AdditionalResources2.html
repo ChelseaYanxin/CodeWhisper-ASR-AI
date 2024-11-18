@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Additional Resources -- GitHub Project Keyword Search</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Additional Resources -- GitHub Project Keyword Search</h1>
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+        <form method="POST" action="/keyword_search">
+            <textarea name="text" placeholder="Enter text to analyze..." required></textarea>
+            <button type="submit">Extract Keywords and Search</button>
+        </form>
+    </div>
+</body>
+</html>
+
