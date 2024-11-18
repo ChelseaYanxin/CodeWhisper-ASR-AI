@@ -1,4 +1,4 @@
-# StudyAI Assistant Documentation
+# CodeWhisper :mage:
 
 ## Table of Contents
 - [Overview](#overview)
@@ -10,10 +10,10 @@
 - [Environment Variables](#environment-variables)
 - [Usage](#usage)
 
-## Overview
+## Overview :rocket:
 CodeWhisper is a Flask-based web application designed to help students and educators with various study-related tasks. The application integrates multiple AI technologies including speech recognition, text processing, and intelligent chatbot capabilities.
 
-## Features
+## Features :crystal_ball:
 - **Multiple Study Tools**:
   - Code Whisper
   - Notes Helper
@@ -21,7 +21,7 @@ CodeWhisper is a Flask-based web application designed to help students and educa
   - Speech to Note
   - Additional Resources
 
-## Project Structure
+## Project Structure :memo:
 ```
 project/
 ├── app.py
@@ -36,9 +36,9 @@ project/
 └── uploads/
 ```
 
-## Technical Details
+## Technical Details  :writing_hand:
 
-### Dependencies
+### Dependencies :toolbox:
 - Flask
 - PyMuPDF (fitz)
 - SpeechBrain
@@ -49,32 +49,32 @@ project/
 - OpenAI
 - Torchaudio
 
-### Key Components
+### Key Components 🔎
 
-#### ASR (Automatic Speech Recognition)
+#### ASR (Automatic Speech Recognition) :microphone:
 - Uses Wav2Vec2 model from Facebook/Meta
 - Supports multiple audio formats (wav, mp3, flac, ogg, mp4, m4a)
 - Implements custom SpeechBrain brain class for audio processing
 
-#### PDF Processing
+#### PDF Processing :notebook:
 - Extracts text from PDF documents
 - Cleans and formats text content
 - Handles formatting for titles, subtitles, and bullet points
 - Removes excessive whitespace and line breaks
 
-#### GitHub Integration
+#### GitHub Integration :desktop_computer:
 - Searches repositories based on extracted keywords
 - Ranks results by stars
 - Returns top 5 most relevant repositories
 
-#### AI Chat Integration
+#### AI Chat Integration :robot:
 - Uses OpenAI's GPT-4 model
 - Implements computer science teaching assistant functionality
 - Provides contextualized responses to student queries
 
-## API Routes
+## API Routes :motorway:
 
-### Main Pages
+### Main Pages :bookmark_tabs:
 - `/` - Main landing page
 - `/NotesHelper` - Notes assistance tool
 - `/SlideToNote` - Slide conversion tool
@@ -82,8 +82,8 @@ project/
 - `/AdditionalResources` - Additional learning resources
 - `/TeachingAssistant` - AI teaching assistant interface
 
-### Processing Endpoints
-#### PDF Processing
+### Processing Endpoints :pushpin:
+#### PDF Processing 
 ```http
 POST /process_pdf
 Content-Type: multipart/form-data
@@ -115,7 +115,7 @@ Content-Type: application/json
 - Accepts user messages
 - Returns AI assistant responses with timestamps
 
-## Installation
+## Installation :wrench:
 
 1. Clone the repository
 2. Install required dependencies:
@@ -125,13 +125,13 @@ pip install flask pymupdf speechbrain torch torchaudio transformers PyGithub rak
 3. Set up environment variables
 4. Create an `uploads` directory in the project root
 
-## Environment Variables
+## Environment Variables :game_die:
 ```bash
 GITHUB_TOKEN=your_github_token
 OPENAI_API_KEY=your_openai_api_key
 ```
 
-## Usage
+## Usage :star:
 
 1. Start the Flask server:
 ```bash
@@ -146,7 +146,7 @@ python app.py
    - Submit text for keyword extraction and GitHub repository search
    - Interact with the AI teaching assistant
 
-## Notes
+## Notes :key:
 - The application runs in debug mode by default
 - Ensure sufficient disk space for uploaded files
 - Regularly clean the uploads directory
