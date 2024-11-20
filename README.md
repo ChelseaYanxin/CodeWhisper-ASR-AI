@@ -1,6 +1,44 @@
 # CodeWhisper :mage:
 
-[Previous sections remain the same until Technical Details...]
+## Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Technical Details](#technical-details)
+- [API Routes](#api-routes)
+- [Installation](#installation)
+- [Environment Variables](#environment-variables)
+- [Usage](#usage)
+
+## Overview
+CodeWhisper is a Flask-based web application designed to help students and educators with various study-related tasks. The application integrates multiple technologies including ASR, OCR, and intelligent chatbot capabilities.
+
+## Features
+- **PDF Text Extraction**: Convert PDF documents(including images) into clean, formatted text.
+- **Speech-to-Text**: Convert audio recordings into text transcriptions
+- **Keyword Search**: Extract keywords from text and search related GitHub repositories
+- **AI Teaching Assistant**: Interactive chatbot for computer science education
+- **Multiple Study Tools**:
+  - Code Whisper
+  - Notes Helper
+  - Slide to Note
+  - Speech to Note
+  - Additional Resources
+
+## Project Structure
+```
+project/
+├── main.py
+├── templates/
+│   ├── CodeWhisper.html
+│   ├── NotesHelper.html
+│   ├── SlideToNote.html
+│   ├── SpeechToNote.html
+│   ├── AdditionalResources.html
+│   ├── TeachingAssistant.html
+│   └── results.html
+└── uploads/
+```
 
 ## Technical Details :writing_hand:
 
@@ -36,7 +74,67 @@
 - Handles formatting for titles, subtitles, and bullet points
 - Removes excessive whitespace and line breaks
 
-[Other components remain the same...]
+
+#### PDF Processing
+- Extracts text from PDF documents
+- Cleans and formats text content
+- Handles formatting for titles, subtitles, and bullet points
+- Removes excessive whitespace and line breaks
+
+#### GitHub Integration
+- Searches repositories based on extracted keywords
+- Ranks results by stars
+- Returns top 5 most relevant repositories
+
+#### AI Chat Integration
+- Uses OpenAI's GPT-4 model
+- Implements computer science teaching assistant functionality
+- Provides contextualized responses to student queries
+
+## API Routes
+
+### Main Pages
+- `/` - Main landing page
+- `/NotesHelper` - Notes assistance tool
+- `/SlideToNote` - Slide conversion tool
+- `/SpeechToNote` - Speech-to-text tool
+- `/AdditionalResources` - Additional learning resources
+- `/TeachingAssistant` - AI teaching assistant interface
+
+### Processing Endpoints
+#### PDF Processing
+```http
+POST /process_pdf
+Content-Type: multipart/form-data
+```
+- Accepts PDF files
+- Returns cleaned and formatted text
+
+#### Audio Processing
+```http
+POST /process_audio
+Content-Type: multipart/form-data
+```
+- Accepts multiple audio formats
+- Returns transcribed text
+
+#### Keyword Search
+```http
+POST /keyword_search
+Content-Type: application/x-www-form-urlencoded
+```
+- Accepts text input
+- Returns keywords and related GitHub repositories
+
+#### Chat Interface
+```http
+POST /chat
+Content-Type: application/json
+```
+- Accepts user messages
+- Returns AI assistant responses with timestamps
+
+
 
 ## Installation :wrench:
 
