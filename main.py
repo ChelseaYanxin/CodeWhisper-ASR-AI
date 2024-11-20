@@ -1,4 +1,5 @@
-from flask import Blueprint,Flask, render_template, request, jsonify
+
+from flask import Blueprint, Flask, render_template, request, jsonify
 import fitz  # pymupdf
 import re
 import speechbrain as sb
@@ -11,57 +12,136 @@ import os
 from openai import OpenAI
 from datetime import datetime
 import logging
-# import nltk
-# nltk.download('stopwords')
+import pytesseract
+from pdf2image import convert_from_path
+import numpy as np
+from PIL import Image
+import cv2
 
 # represent the application
 app = Flask(__name__)
 
+GITHUB_TOKEN = os.getenv('GITHUB_TOKEN', 'your_github_token_here')
+chatbot_bp = Blueprint('chatbot', __name__, template_folder='templates')
+client = OpenAI(api_key='your_openai_api_key')
 
-# Extract and clean text from a PDF
+pytesseract.pytesseract.tesseract_cmd = r'D:\Tesseract-OCR\tesseract.exe' # your path to Tesseract executable
+
+def preprocess_image(image):
+    
+   
+    if isinstance(image, Image.Image):
+        image = np.array(image)
+    
+    # transform to grayscale
+    if len(image.shape) == 3:
+        gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    else:
+        gray = image
+
+    # binarize the image
+    thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+
+    # denoise the image
+    denoised = cv2.fastNlMeansDenoising(thresh)
+
+    # sharpen the image
+    kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
+    sharpened = cv2.filter2D(denoised, -1, kernel)
+
+    return Image.fromarray(sharpened)
+
+def perform_ocr(image, lang='eng+chi_sim'):
+    
+    # process the image
+    processed_image = preprocess_image(image)
+    
+    # convert the image to text
+    custom_config = r'--oem 3 --psm 6'
+    text = pytesseract.image_to_string(processed_image, lang=lang, config=custom_config)
+    
+    return text
+
 def extract_clean_pdf_text(pdf_file_path):
-    doc = fitz.open(pdf_file_path)  # Open the document OCR
-    text = ""
+    # open the PDF file
+    doc = fitz.open(pdf_file_path)
+    full_text = ""
+    
+    for page_num in range(len(doc)):
+        page = doc[page_num]
+        
+        # extract text from the page
+        text = page.get_text()
+        
+        # if the text is too short, perform OCR on the page
+        if len(text.strip()) < 50:  # arbitrary threshold
+            # convert the page to an image
+            pix = page.get_pixmap()
+            img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+            
+            # perform OCR on the image
+            text = perform_ocr(img)
+        
+        full_text += text + "\n"
 
-    for page in doc:  # Iterate through the document pages
-        text += page.get_text()  # Get the plain text of the page
+    # clean the text
+    # remove excessive line breaks and whitespace
+    cleaned_text = re.sub(r'\n{2,}', '\n', full_text)
+    cleaned_text = re.sub(r'\s{2,}', ' ', cleaned_text)
 
-    # Remove excessive line breaks and whitespace
-    cleaned_text = re.sub(r'\n{2,}', '\n', text)  # Remove consecutive newline characters
-    cleaned_text = re.sub(r'\s{2,}', ' ', cleaned_text)  # Remove extra spaces
+    # split paragraphs
+    paragraphs = cleaned_text.split("\n")
 
-    # Group by paragraphs
-    paragraphs = cleaned_text.split("\n")  # Split paragraphs using newline characters
-
-    # Merge interrupted sentences (assuming lines without punctuation need to be merged)
+    # append a space to paragraphs that don't end with punctuation
     formatted_paragraphs = []
     for para in paragraphs:
-        if para and not re.search(r'[.!?]$', para.strip()):  # If line does not end with punctuation
+        if para and not re.search(r'[.!?]$', para.strip()):
             formatted_paragraphs.append(para.strip() + " ")
         else:
             formatted_paragraphs.append(para.strip() + "\n")
 
-    # Add titles and bullet points
+    # add titles and bullet points
     final_paragraphs = []
     for para in formatted_paragraphs:
-        if re.match(r'^[A-Z\s]+$', para.strip()):  # Detect titles (all uppercase)
+        if re.match(r'^[A-Z\s]+$', para.strip()):
             final_paragraphs.append(f"\n\n# {para.strip()}\n\n")
-        elif re.match(r'^\d+\.\s', para.strip()):  # Detect subtitles (numbered)
+        elif re.match(r'^\d+\.\s', para.strip()):
             final_paragraphs.append(f"\n## {para.strip()}\n")
-        elif re.match(r'^[-*]\s', para.strip()):  # Detect bullet points
+        elif re.match(r'^[-*]\s', para.strip()):
             final_paragraphs.append(f"- {para.strip()[2:]}\n")
         else:
             final_paragraphs.append(para)
 
-    final_text = ''.join(final_paragraphs)  # Combine into a single string
+    final_text = ''.join(final_paragraphs)
     return final_text
 
-class DotDict(dict):
-    def __getattr__(self, key):
-        return self[key]
+@app.route('/process_pdf', methods=['POST'])
+def process_pdf():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file uploaded'}), 400
 
-    def __setattr__(self, key, value):
-        self[key] = value
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    # Save the uploaded PDF to a temporary location
+    file_path = os.path.join('uploads', file.filename)
+    file.save(file_path)
+
+    try:
+        # extract and clean text from the PDF
+        cleaned_text = extract_clean_pdf_text(file_path)
+        
+        # remove the temporary file
+        os.remove(file_path)
+        
+        return jsonify({'cleaned_text': cleaned_text})
+    except Exception as e:
+        # remove the temporary file
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        return jsonify({'error': str(e)}), 500
+
 
 class ASR(sb.Brain):
     def __init__(self, modules=None, hparams=None, run_opts=None):
@@ -188,27 +268,6 @@ def SpeechToNote():
 @app.route('/AdditionalResources')
 def AdditionalResources():
     return render_template('AdditionalResources.html')
-
-# Route to handle file upload and processing
-@app.route('/process_pdf', methods=['POST'])
-def process_pdf():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file uploaded'}), 400
-
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': 'No selected file'}), 400
-
-    # Save the uploaded PDF to a temporary location
-    file_path = f'./uploads/{file.filename}'
-    file.save(file_path)
-
-    # Extract and clean text from the PDF
-    cleaned_text = extract_clean_pdf_text(file_path)
-    
-    # Return the cleaned text as a response
-    return jsonify({'cleaned_text': cleaned_text})
-
 
 # Route to handle file upload and processing
 @app.route('/process_audio', methods=['POST'])
