@@ -17,11 +17,12 @@ from pdf2image import convert_from_path
 import numpy as np
 from PIL import Image
 import cv2
-
+from ASR.Model import ASR
+from ASR.Model import transcribe_audio
 # represent the application
 app = Flask(__name__)
 
-GITHUB_TOKEN = os.getenv('GITHUB_TOKEN', 'your_github_token_here')
+GITHUB_TOKEN = os.getenv('GITHUB_TOKEN', '')
 chatbot_bp = Blueprint('chatbot', __name__, template_folder='templates')
 client = OpenAI(api_key='your_openai_api_key')
 
@@ -143,103 +144,19 @@ def process_pdf():
         return jsonify({'error': str(e)}), 500
 
 
-class ASR(sb.Brain):
-    def __init__(self, modules=None, hparams=None, run_opts=None):
-        if modules is None:
-            modules = {}
 
-        self.processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
-        self.wav2vec2 = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")
 
-        modules["wav2vec2"] = self.wav2vec2
 
-        super().__init__(modules=modules, hparams=hparams, run_opts=run_opts)
 
-    def prepare_features(self, wavs, wav_lens=None):
-        if wavs.dim() == 3:
-            wavs = wavs.squeeze(1)
 
-        if hasattr(self.hparams, 'sample_rate') and self.hparams.sample_rate != 16000:
-            wavs = torchaudio.transforms.Resample(
-                self.hparams.sample_rate, 16000
-            )(wavs)
 
-        input_values = self.processor(
-            wavs.cpu().numpy(),
-            sampling_rate=16000,
-            return_tensors="pt",
-            padding=True
-        ).input_values
-
-        return input_values
-
-    def compute_forward(self, batch, stage):
-        batch = batch.to(self.device)
-        wavs, wav_lens = batch.sig
-
-        input_values = self.prepare_features(wavs, wav_lens)
-        input_values = input_values.to(self.device)
-
-        outputs = self.wav2vec2(input_values)
-        logits = outputs.logits
-
-        return logits
-
-    def compute_objectives(self, predictions, batch, stage):
-        batch = batch.to(self.device)
-        ids = batch.id
-        tokens, token_lens = batch.tokens
-
-        log_probs = torch.nn.functional.log_softmax(predictions, dim=-1)
-        loss = self.hparams.ctc_loss(log_probs, tokens, None, token_lens)
-
-        if stage != sb.Stage.TRAIN:
-            sequence = self.decode_predictions(predictions)
-            self.wer_metric.append(ids, sequence, tokens)
-
-        return loss
-
-    def decode_predictions(self, logits):
-        predicted_ids = torch.argmax(logits, dim=-1)
-        transcriptions = self.processor.batch_decode(predicted_ids)
-        return transcriptions
-
-    def transcribe_file(self, audio_file):
-        waveform, sample_rate = torchaudio.load(audio_file)
-
-        if sample_rate != 16000:
-            waveform = torchaudio.transforms.Resample(
-                sample_rate, 16000
-            )(waveform)
-
-        input_values = self.prepare_features(waveform)
-        input_values = input_values.to(self.device)
-
-        with torch.no_grad():
-            outputs = self.wav2vec2(input_values)
-            logits = outputs.logits
-
-        transcription = self.decode_predictions(logits)[0]
-
-        return transcription
-
-def create_asr_model():
-    hparams = DotDict({
-        "sample_rate": 16000,
-        "ctc_loss": torch.nn.CTCLoss(),
-    })
-
-    model = ASR(
-        hparams=hparams,
-        run_opts={"device": "cuda" if torch.cuda.is_available() else "cpu"},
-    )
-
-    return model
 
 
 def asr_audio(speech_file_path):
-    asr_model = create_asr_model()
-    result = asr_model.transcribe_file(speech_file_path)
+    asr_model = ASR()  
+    processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h") 
+    
+    result = transcribe_audio(speech_file_path, asr_model, processor)
     return result
 
 
