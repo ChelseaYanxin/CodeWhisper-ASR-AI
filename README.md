@@ -57,8 +57,36 @@ project/
 - opencv-python
 - numpy
 - Pillow
+- librosa
+- speechbrain
 
 ### Key Components 🔎
+
+#### Audio Preprocessing 
+- Loads and resamples audio files:
+  - Converts audio to 16kHz sampling rate for consistent processing.
+- Automatic silence removal:
+  - Trims unnecessary silence or noise at the beginning and end of audio.
+	- Normalizes audio:
+	-	Adjusts volume levels for uniform loudness across files.
+	-	Handles audio formats:
+	-	Supports common formats like WAV, MP3, and FLAC.
+	-	Converts stereo to mono:
+	-	Ensures compatibility with single-channel processing models.
+- Converts raw audio to features:
+	-	Uses Wav2Vec2Processor to convert audio signals into input tensors.
+	-	Handles varying audio lengths:
+	-	Pads or truncates sequences to match model input requirements.
+	-	Noise reduction:
+	-	Reduces background noise for better recognition accuracy.
+	-	Dynamic range compression:
+	-	Ensures uniform audio dynamics for model stability.
+- Speech-to-Text (STT) Inference:
+	-	Model-driven transcription:
+	-	Utilizes Wav2Vec2ForCTC for automatic speech recognition.
+	-	Batch processing support:
+	-	Handles multiple languages:
+
 
 #### PDF Processing with OCR :notebook:
 - Extracts text from both digital and scanned PDF documents
